@@ -1,0 +1,60 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "win.lioil.bluetooth"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        def isNio = signingNio == '1'
+        def platform = isNio ? '/platform_nio.jks' : "/platform.jks"
+        def keyAliasStr = isNio ? 'androiddebugkey' : 'alpstestkey'
+        def keyStorePasswordStr = isNio ? 'android' : '123456'
+        def keyPasswordStr = isNio ? 'android' : '123456'
+        print "signingConfigs isNio:$isNio platform:$platform keyAliasStr:$keyAliasStr keyStorePasswordStr:$keyStorePasswordStr keyPasswordStr:$keyPasswordStr"
+        debug {
+            storeFile file(rootProject.getProjectDir().canonicalPath + platform)
+            keyAlias keyAliasStr
+            storePassword keyStorePasswordStr
+            keyPassword keyPasswordStr
+        }
+
+        release {
+            storeFile file(rootProject.getProjectDir().canonicalPath + platform)
+            keyAlias keyAliasStr
+            storePassword keyStorePasswordStr
+            keyPassword keyPasswordStr
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true //缩减资源
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+}
